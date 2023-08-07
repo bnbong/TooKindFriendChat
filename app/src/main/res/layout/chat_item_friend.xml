@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!--     Left Chat (Other user) -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/friend_iv"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@android:color/transparent"
+        app:civ_border_overlay="true"
+        app:civ_border_width="5dp"
+        app:civ_border_color="#000000"
+        android:src="@mipmap/ic_launcher"/>
+
+    <TextView
+        android:id="@+id/friend_tv_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="name"
+        android:textColor="#333333"
+        android:layout_toRightOf="@+id/friend_iv"
+        android:layout_marginLeft="16dp"/>
+
+    <TextView
+        android:id="@+id/friend_tv_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hello android"
+        android:layout_below="@+id/friend_tv_name"
+        android:layout_toRightOf="@id/friend_iv"
+        android:layout_marginLeft="16dp"
+        android:padding="12dp"
+        android:maxWidth="250dp"
+        android:background="@drawable/rounded_corner"
+        android:backgroundTint="@color/purple_200"
+        android:textColor="#333333"/>
+    <TextView
+        android:id="@+id/friend_tv_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="13:35"
+        android:textSize="12sp"
+        android:layout_toRightOf="@+id/friend_tv_msg"
+        android:layout_marginLeft="8dp"
+        android:layout_alignBottom="@id/friend_tv_msg"/>
+
+</RelativeLayout>

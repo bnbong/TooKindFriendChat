@@ -1,16 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/recycler_view"
-        android:layout_above="@+id/bottom_layout"/>
 
     <TextView
         android:layout_width="match_parent"
@@ -22,23 +17,33 @@
         android:textSize="28sp"
         />
 
-    <RelativeLayout
+    <ListView
+        android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_alignParentBottom="true"
-        android:padding="8dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:divider="#ffffff"
+        android:dividerHeight="0dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp"
+        android:gravity="center_vertical"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         android:id="@+id/bottom_layout">
-
         <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/et_msg"
-            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:hint="Write here"
-            android:padding="16dp"
-            android:layout_toLeftOf="@+id/btn_send"
+            android:inputType="textMultiLine"
+            android:padding="10dp"
+            android:maxLines="3"
             android:background="@drawable/rounded_corner"/>
-
         <ImageButton
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -50,6 +55,5 @@
             android:src="@drawable/ic_send"
             android:background="?attr/selectableItemBackgroundBorderless"
             />
-
-    </RelativeLayout>
-</RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

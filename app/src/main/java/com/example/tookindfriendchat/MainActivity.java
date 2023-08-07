@@ -1,9 +1,11 @@
 package com.example.tookindfriendchat;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,7 +19,9 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -33,12 +37,12 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
-    RecyclerView recycler_view;
+    ListView listView;
     TextView tv_welcome;
     EditText et_msg;
     ImageButton btn_send;
 
-    List<Message> messageList;
+    ArrayList<Message> messageList;
     MessageAdapter messageAdapter;
 
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
@@ -50,25 +54,28 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        recycler_view = findViewById(R.id.recycler_view);
+        listView = findViewById(R.id.listview);
         tv_welcome = findViewById(R.id.tv_welcome);
         et_msg = findViewById(R.id.et_msg);
         btn_send = findViewById(R.id.btn_send);
 
-        recycler_view.setHasFixedSize(true);
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        manager.setStackFromEnd(true);
-        recycler_view.setLayoutManager(manager);
-
+//        recycler_view.setHasFixedSize(true);
+//        LinearLayoutManager manager = new LinearLayoutManager(this);
+//        manager.setStackFromEnd(true);
+//        recycler_view.setLayoutManager(manager);
+//
+//        messageList = new ArrayList<>();
+//        messageAdapter = new MessageAdapter(messageList, LayoutInflater.from(this));
+//        recycler_view.setAdapter(messageAdapter);
         messageList = new ArrayList<>();
-        messageAdapter = new MessageAdapter(messageList);
-        recycler_view.setAdapter(messageAdapter);
+        messageAdapter = new MessageAdapter(messageList, LayoutInflater.from(this));
+        listView.setAdapter(messageAdapter);
 
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String question = et_msg.getText().toString().trim();
-                addToChat(question, Message.SENT_BY_ME);
+                addToChat("당신", question, getCurrentTime(), Message.SENT_BY_ME);
                 et_msg.setText("");
                 callAPI(question);
                 tv_welcome.setVisibility(View.GONE);
@@ -78,25 +85,30 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    void addToChat(String message, String sentBy){
+    void addToChat(String name, String message, String time, String sentBy){
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                messageList.add(new Message(message, sentBy));
+                messageList.add(new Message(name, message, time, sentBy));
                 messageAdapter.notifyDataSetChanged();
-                recycler_view.smoothScrollToPosition(messageAdapter.getItemCount());
+                listView.setSelection(messageList.size() - 1);
             }
         });
     }
 
-    void addResponse(String response){
+    void addResponse(String name, String response){
         messageList.remove(messageList.size()-1);
-        addToChat(response, Message.SENT_BY_FRIEND);
+        addToChat(name, response, getCurrentTime(), Message.SENT_BY_FRIEND);
+    }
+
+    String getCurrentTime() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm"); // Set your desired format
+        return sdf.format(new Date());
     }
 
     void callAPI(String question){
         //okhttp
-        messageList.add(new Message("...", Message.SENT_BY_FRIEND));
+        messageList.add(new Message("완벽한 친구", "...", getCurrentTime(), Message.SENT_BY_FRIEND));
 
         JSONObject object = new JSONObject();
         try {
@@ -117,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                addResponse("Failed to load response due to "+e.getMessage());
+                addResponse("완벽한 친구", "Failed to load response due to "+e.getMessage());
             }
 
             @Override
@@ -125,16 +137,15 @@ public class MainActivity extends AppCompatActivity {
                 if(response.isSuccessful()){
                     JSONObject jsonObject = null;
                     try {
-                        //아래 body().toString()이 아니라 .string() 주의
                         jsonObject = new JSONObject(response.body().string());
                         JSONArray jsonArray = jsonObject.getJSONArray("choices");
                         String result = jsonArray.getJSONObject(0).getString("text");
-                        addResponse(result.trim());
+                        addResponse("완벽한 친구", result.trim());
                     }catch (JSONException e){
                         e.printStackTrace();
                     }
                 } else {
-                    addResponse("Failed to load response due to "+response.body().string());
+                    addResponse("완벽한 친구", "Failed to load response due to "+response.body().string());
                 }
             }
         });

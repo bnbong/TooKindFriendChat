@@ -10,20 +10,15 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.Properties;
 
 import adapter.MessageAdapter;
 import model.Message;
@@ -59,14 +54,6 @@ public class MainActivity extends AppCompatActivity {
         et_msg = findViewById(R.id.et_msg);
         btn_send = findViewById(R.id.btn_send);
 
-//        recycler_view.setHasFixedSize(true);
-//        LinearLayoutManager manager = new LinearLayoutManager(this);
-//        manager.setStackFromEnd(true);
-//        recycler_view.setLayoutManager(manager);
-//
-//        messageList = new ArrayList<>();
-//        messageAdapter = new MessageAdapter(messageList, LayoutInflater.from(this));
-//        recycler_view.setAdapter(messageAdapter);
         messageList = new ArrayList<>();
         messageAdapter = new MessageAdapter(messageList, LayoutInflater.from(this));
         listView.setAdapter(messageAdapter);
@@ -102,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     String getCurrentTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm"); // Set your desired format
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
         return sdf.format(new Date());
     }
 
@@ -110,18 +97,33 @@ public class MainActivity extends AppCompatActivity {
         //okhttp
         messageList.add(new Message("완벽한 친구", "...", getCurrentTime(), Message.SENT_BY_FRIEND));
 
+        JSONArray arr = new JSONArray();
+        JSONObject baseAi = new JSONObject();
+        JSONObject userMsg = new JSONObject();
+        try {
+            baseAi.put("role", "user");
+            baseAi.put("content", "당신과 나는 오랫동안 알고 지낸 소꿉친구입니다, 반말로 편안하고 친근한 말투로 대답해주세요.");
+
+            userMsg.put("role", "user");
+            userMsg.put("content", question);
+
+            arr.put(baseAi);
+            arr.put(userMsg);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
         JSONObject object = new JSONObject();
         try {
-            object.put("model", "text-davinci-003");
-            object.put("prompt", question);
-            object.put("max_tokens", 4000);
-            object.put("temperature", 0);
+            //모델명 변경
+            object.put("model", "gpt-3.5-turbo");
+            object.put("messages", arr);
         } catch (JSONException e){
             e.printStackTrace();
         }
         RequestBody body = RequestBody.create(object.toString(), JSON);
         Request request = new Request.Builder()
-                .url("https://api.openai.com/v1/completions")
+                .url("https://api.openai.com/v1/chat/completions")
                 .header("Authorization", "Bearer "+ MY_SECRET_KEY)
                 .post(body)
                 .build();
@@ -139,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         jsonObject = new JSONObject(response.body().string());
                         JSONArray jsonArray = jsonObject.getJSONArray("choices");
-                        String result = jsonArray.getJSONObject(0).getString("text");
+                        String result = jsonArray.getJSONObject(0).getJSONObject("message").getString("content");
                         addResponse("완벽한 친구", result.trim());
                     }catch (JSONException e){
                         e.printStackTrace();

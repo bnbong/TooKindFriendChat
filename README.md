@@ -2,6 +2,9 @@
 
 세상에서 나와 가장 완벽에 가까운 궁합을 가진 친구와 함께하는 채팅 앱
 
+![KakaoTalk_Photo_2023-08-08-12-10-04](https://github.com/bnbong/TooKindFriendChat/assets/55042923/8151341d-60f4-4b07-9773-bc0953913a58)
+
+
 ## Introduction
 
  - `TooKindFriendChattingApp`은 친구와 함께하는 채팅 앱입니다.
